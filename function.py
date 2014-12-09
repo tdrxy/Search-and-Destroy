@@ -19,8 +19,7 @@ import time
 #####
 
 #pretty progress bar
-##########
-
+################################
 def bold(msg):
 	return u'\033[1m%s\033[0m' % msg
 
@@ -36,6 +35,11 @@ def progress(current, total):
 	bar = 'X' * amount + ' ' * remain
 	return bold(prefix) + bar_start + bar + bar_end
 
+def status_bar(status, goal):
+	sys.stdout.write(progress(status, goal) + '\r')
+	sys.stdout.flush()
+
+################################
 def checksum_md5(filename):
 	try:
 		md5 = hashlib.md5()
@@ -45,7 +49,7 @@ def checksum_md5(filename):
 		return md5.digest()
 	except:
 		return -1
-###########################
+
 def delete_duplicate(original, path, name):
 	
 	deleted = 0
@@ -64,10 +68,6 @@ def delete_duplicate(original, path, name):
 			next = False
 	return deleted
 
-
-def status_bar(status, goal):
-	sys.stdout.write(progress(status, goal) + '\r')
-	sys.stdout.flush()
 
 def make_hashtable(files):
 
@@ -110,21 +110,21 @@ def search_and_destroy(files, hashtable):
 		files.remove(original)
 	return deleted_bytes
 
+def __main__():
+	COLS = struct.unpack('hh',  fcntl.ioctl(sys.stdout, termios.TIOCGWINSZ, '1234'))[1]
+	path = '/Users/thomasdierckx/Documents/scripts/'   
+	print "___________________________________________________________"
+	print "Working dir: "+ path
 
-COLS = struct.unpack('hh',  fcntl.ioctl(sys.stdout, termios.TIOCGWINSZ, '1234'))[1]
-path = '/Users/thomasdierckx/Documents/scripts/'   
-print "___________________________________________________________"
-print "Working dir: "+ path
+	files = os.listdir(path)
+	hashtable = make_hashtable(files)
+	deleted_bytes = search_and_destroy(files, hashtable)
 
-files = os.listdir(path)
-hashtable = make_hashtable(files)
-deleted_bytes = search_and_destroy(files, hashtable)
-
-if deleted_bytes == 0:
-	print bold("No Duplicates.")
-else:
-	print bold("Freed "+str(deleted_bytes/1024)+"Kb of "+ str(os.path.getsize(path)) +"Kb.")
+	if deleted_bytes == 0:
+		print bold("No Duplicates.")
+	else:
+		print bold("Freed "+str(deleted_bytes/1024)+"Kb of "+ str(os.path.getsize(path)) +"Kb.")
 
 
-print "___________________________________________________________"
+	print "___________________________________________________________"
 
