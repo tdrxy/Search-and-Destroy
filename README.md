@@ -1,7 +1,7 @@
 Search and Destroy
 =========
 
-Remove duplicates /w python
+Remove duplicate files /w python
 
 Searches for duplicates in target directory and subdirectories, and destroys them.
 
